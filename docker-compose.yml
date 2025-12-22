@@ -1,7 +1,7 @@
 services:
   pg:
     env_file:
-      - .env
+      - app/.env
     image: postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
