@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class RunConfig(BaseModel):
     host: str = "127.0.0.1"
-    port: int = 8080
+    port: int = 8000
 
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
