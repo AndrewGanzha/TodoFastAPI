@@ -1,5 +1,3 @@
-_all_ = (
-    "camel_case_to_snake_case"
-)
+_all_ = "camel_case_to_snake_case"
 
 from .case_converter import camel_case_to_snake_case
