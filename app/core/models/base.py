@@ -10,9 +10,7 @@ from utils import camel_case_to_snake_case
 class Base(DeclarativeBase):
     __abstract__ = True
 
-    metadata = MetaData(
-        settings.db.naming_convention
-    )
+    metadata = MetaData(settings.db.naming_convention)
 
     @declared_attr.directive
     def __tablename__(cls) -> str:
