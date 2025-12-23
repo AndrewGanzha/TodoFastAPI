@@ -7,11 +7,13 @@
 - Docker + Docker Compose.
 - Python ≥3.12 (в `pyproject.toml` указан ^3.14; используйте последнюю стабильную).
 - Poetry.
+- `app/.env` используется и приложением, и `docker-compose` для поднятия Postgres (переменные `POSTGRES_*`).
 
 ## Быстрый старт
 1. Клонируйте репозиторий и перейдите в него: `cd /Users/andrejganza/python/pytask`.
 2. Скопируйте пример окружения: `cp app/.env.template app/.env`.
-3. Обновите `APP_CONFIG__DB__URL` под локальный доступ (пример: `postgresql+asyncpg://user:password@localhost:5432/shop`). `APP_CONFIG__DB__ECHO=1` включит лог SQL.
+3. Обновите креды в `app/.env` (они же попадут в Postgres-контейнер) и приведите `APP_CONFIG__DB__URL` в соответствие, например:\
+   `POSTGRES_DB=app`, `POSTGRES_USER=app`, `POSTGRES_PASSWORD=app`, `APP_CONFIG__DB__URL=postgresql+asyncpg://app:app@localhost:5432/app`. `APP_CONFIG__DB__ECHO=1` включает лог SQL.
 4. Поднимите базу: `docker compose up -d`.
 5. Установите зависимости: `poetry install`.
 6. Примените миграции: `poetry run alembic -c app/alembic.ini upgrade head`.
@@ -30,6 +32,7 @@
 - Сессии БД: используйте зависимость `db_helper.session_getter`.
 - Роуты: добавляйте модули в `app/api` (например, `api/api_v1/...`) и подключайте через `api/router` в `app/main.py`. Общий префикс задаётся `APP_CONFIG__API__PREFIX` (по умолчанию `/api`), версия — `APP_CONFIG__API__V1__PREFIX` (по умолчанию `/v1`).
 - Настройки: задаются переменными с префиксом `APP_CONFIG__...` (см. `core/config.py`). Host/port сервера можно переопределить `APP_CONFIG__RUN__HOST` и `APP_CONFIG__RUN__PORT`.
+- Переменные `POSTGRES_*` лежат в `app/.env` и используются только docker-compose; приложение их игнорирует.
 
 ## Утилиты
 - Форматирование: `poetry run black app`.
