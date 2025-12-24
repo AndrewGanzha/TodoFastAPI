@@ -26,6 +26,12 @@
   `poetry run alembic -c app/alembic.ini revision --autogenerate -m "описание"`.
 - Применить: `poetry run alembic -c app/alembic.ini upgrade head`.
 - Откатить: `poetry run alembic -c app/alembic.ini downgrade -1`.
+- Как добавить новую миграцию (рекомендуемый порядок):
+  1) Запустите Postgres (`docker compose up -d`) и убедитесь, что `APP_CONFIG__DB__URL` в `app/.env` указывает на рабочую БД.
+  2) Обновите модели SQLAlchemy (наследники `core.models.base.Base`).
+  3) Сгенерируйте ревизию: `poetry run alembic revision --autogenerate -m "описание"`.
+  4) Проверьте сгенерированный файл в `app/alembic/versions/`: операторы `op.add_column`, `op.create_table` и т.п. должны соответствовать ожидаемым изменениям. Если Alembic не увидел разницу, проверьте импорты моделей в `core/models/__init__.py` и маппинги.
+  5) Примените миграцию: `poetry run alembic -c app/alembic.ini upgrade head`. При ошибке корректируйте файл ревизии вручную (функции `upgrade`/`downgrade`) и повторите.
 
 ## Структура и расширение
 - Модели: наследуйте от `core.models.base.Base`; имя таблицы строится из имени класса (CamelCase → snake_case + `s`) через `utils/case_converter.py`.
