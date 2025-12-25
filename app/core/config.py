@@ -37,6 +37,7 @@ class AuthConfig(BaseModel):
     access_secret_key: str = "CHANGE_ME"
     refresh_secret_key: str = "CHANGE_ME_REFRESH"
     access_token_expire_minutes: int = 30
+    refresh_token_expire_minutes: int = 60 * 24 * 7
 
 
 class Settings(BaseSettings):

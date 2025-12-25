@@ -7,8 +7,8 @@ from repository.users import (
     create_user,
     get_user_by_email,
 )
-from schemas.user import LoginIn, UserRegisterIn
-from services.auth.jwt import create_access_token
+from schemas.user import LoginIn, TokenOut, UserRegisterIn
+from services.auth.jwt import create_access_token, create_refresh_token, decode_token
 from services.auth.security import hash_password, verify_password
 
 
@@ -28,13 +28,41 @@ async def register_user(db: AsyncSession, data: UserRegisterIn):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)) from err
 
 
-async def login_user(db: AsyncSession, data: LoginIn) -> str:
+async def login_user(db: AsyncSession, data: LoginIn) -> TokenOut:
     user = await get_user_by_email(db, data.email)
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    return create_access_token(
-        subject=str(user.id),
+    return _issue_tokens_for_user(user_id=user.id)
+
+
+def _issue_tokens_for_user(*, user_id: int) -> TokenOut:
+    access = create_access_token(
+        subject=str(user_id),
         secret_key=settings.auth.access_secret_key,
         expires_minutes=settings.auth.access_token_expire_minutes,
     )
+    refresh = create_refresh_token(
+        subject=str(user_id),
+        secret_key=settings.auth.refresh_secret_key,
+        expires_minutes=settings.auth.refresh_token_expire_minutes,
+    )
+    return TokenOut(access_token=access, refresh_token=refresh)
+
+
+async def refresh_access_token(refresh_token: str) -> TokenOut:
+    try:
+        payload = decode_token(refresh_token, secret_key=settings.auth.refresh_secret_key)
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired refresh token")
+
+    sub = payload.get("sub")
+    if not sub:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing subject")
+
+    try:
+        user_id = int(sub)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token subject")
+
+    return _issue_tokens_for_user(user_id=user_id)
