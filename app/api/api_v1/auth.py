@@ -8,12 +8,12 @@ from services.auth.service import SECRET_KEY, login_user, register_user
 
 router = APIRouter()
 
-@router.post("/auth/register", response_model=UserOut, status_code=201)
+@router.post("/register", response_model=UserOut, status_code=201)
 async def register(data: UserRegisterIn, db: AsyncSession = Depends(db_helper.session_getter)):
     user = await register_user(db, data)
     return UserOut(id=user.id, email=user.email)
 
-@router.post("/auth/login", response_model=TokenOut)
+@router.post("/login", response_model=TokenOut)
 async def login(data: LoginIn, db: AsyncSession = Depends(db_helper.session_getter)):
     token = await login_user(db, data)
     return TokenOut(access_token=token)
