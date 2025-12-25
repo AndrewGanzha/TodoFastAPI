@@ -1,14 +1,11 @@
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.config import settings
 from repository.users import create_user, get_user_by_email
 from schemas.user import LoginIn, UserRegisterIn
 from services.auth.jwt import create_access_token
 from services.auth.security import hash_password, verify_password
-
-# TODO заменить на использование env
-SECRET_KEY = "CHANGE_ME"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 async def register_user(db: AsyncSession, data: UserRegisterIn):
@@ -31,6 +28,6 @@ async def login_user(db: AsyncSession, data: LoginIn) -> str:
 
     return create_access_token(
         subject=str(user.id),
-        secret_key=SECRET_KEY,
-        expires_minutes=ACCESS_TOKEN_EXPIRE_MINUTES,
+        secret_key=settings.auth.access_secret_key,
+        expires_minutes=settings.auth.access_token_expire_minutes,
     )

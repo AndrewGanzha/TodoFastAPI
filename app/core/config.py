@@ -33,6 +33,11 @@ class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v1: ApiV1Prefix = ApiV1Prefix()
 
+class AuthConfig(BaseModel):
+    access_secret_key: str = "CHANGE_ME"
+    refresh_secret_key: str = "CHANGE_ME_REFRESH"
+    access_token_expire_minutes: int = 30
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -45,6 +50,7 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
+    auth: AuthConfig = AuthConfig()
 
 
 settings = Settings()
