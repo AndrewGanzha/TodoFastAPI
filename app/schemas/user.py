@@ -1,9 +1,24 @@
-from pydantic import BaseModel, EmailStr
+import re
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 class UserRegisterIn(BaseModel):
     email: EmailStr
-    password: str
-    username: str
+    password: str = Field(min_length=8, max_length=128)
+    username: str = Field(min_length=3, max_length=50)
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, value: str) -> str:
+        if not re.fullmatch(r"[A-Za-z0-9_.-]+", value):
+            raise ValueError("username may contain letters, digits, '.', '-', '_' only")
+        return value
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        if not re.search(r"[A-Za-z]", value) or not re.search(r"\d", value):
+            raise ValueError("password must contain at least one letter and one digit")
+        return value
 
 class LoginIn(BaseModel):
     email: EmailStr
