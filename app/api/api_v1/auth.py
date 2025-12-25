@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, status, APIRouter
+from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
@@ -19,7 +20,7 @@ async def register(data: UserRegisterIn, db: AsyncSession = Depends(db_helper.se
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    user = await create_user(db, email=data.email, password_hash=hash_password(data.password))
+    user = await create_user(db, email=data.email, username=data.username, password_hash=hash_password(data.password))
     return UserOut(id=user.id, email=user.email)
 
 @router.post("/auth/login", response_model=TokenOut)
