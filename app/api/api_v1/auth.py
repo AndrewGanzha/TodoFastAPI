@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Depends, APIRouter
+from fastapi import Depends, APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
-from schemas.user import UserOut, UserRegisterIn, TokenOut, LoginIn, TokenRefreshIn
+from core.schemas.user import UserOut, UserRegisterIn, TokenOut, LoginIn, TokenRefreshIn
 from core.config import settings
 from services.auth.deps import get_current_user
 from services.auth.service import login_user, refresh_access_token, register_user

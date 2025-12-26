@@ -7,7 +7,7 @@ from repository.users import (
     create_user,
     get_user_by_email,
 )
-from schemas.user import LoginIn, TokenOut, UserRegisterIn
+from core.schemas.user import LoginIn, TokenOut, UserRegisterIn
 from services.auth.jwt import create_access_token, create_refresh_token, decode_token
 from services.auth.security import hash_password, verify_password
 
