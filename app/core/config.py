@@ -27,6 +27,7 @@ class DatabaseConfig(BaseModel):
 class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
     auth: str = "/auth"
+    todo: str = "/todo"
 
 
 class ApiPrefix(BaseModel):
