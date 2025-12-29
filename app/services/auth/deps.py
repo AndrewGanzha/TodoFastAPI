@@ -1,4 +1,5 @@
-from fastapi import Depends, Header, HTTPException
+from fastapi import Depends, HTTPException, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper, User
@@ -6,13 +7,15 @@ from repository.users import get_user_by_id
 from services.auth.jwt import decode_token
 
 
-def get_token_from_header(authorization: str | None = Header(default=None)) -> str:
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Missing Authorization header")
-    prefix = "Bearer "
-    if not authorization.startswith(prefix):
+bearer_scheme = HTTPBearer(auto_error=True)
+
+
+def get_token_from_header(
+    credentials: HTTPAuthorizationCredentials = Security(bearer_scheme),
+) -> str:
+    if credentials.scheme.lower() != "bearer":
         raise HTTPException(status_code=401, detail="Invalid auth scheme")
-    return authorization[len(prefix):].strip()
+    return credentials.credentials
 
 def get_current_user(secret_key: str):
     async def _dep(
