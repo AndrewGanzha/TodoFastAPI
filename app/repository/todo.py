@@ -1,7 +1,9 @@
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from core.models import Todo, User
-from core.schemas.todo import TodoCreate
+from core.schemas.todo import TodoCreate, TodoUpdate
 
 
 async def create(data: TodoCreate, db: AsyncSession, current_user: User) -> Todo:
@@ -10,3 +12,13 @@ async def create(data: TodoCreate, db: AsyncSession, current_user: User) -> Todo
     await db.commit()
     await db.refresh(todo)
     return todo
+
+async def update(data: TodoUpdate, db: AsyncSession, current_user: User) -> Todo:
+    todo = db.get(Todo, data.id)
+
+    if todo is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    else:
+        todo.todo = data.todo
+        await db.commit()
+        return todo
