@@ -13,12 +13,16 @@ async def create(data: TodoCreate, db: AsyncSession, current_user: User) -> Todo
     await db.refresh(todo)
     return todo
 
-async def update(data: TodoUpdate, db: AsyncSession, current_user: User) -> Todo:
-    todo = db.get(Todo, data.id)
+# TODO поправить типизацию
+async def update(data: TodoUpdate, db: AsyncSession, current_user: User) -> Todo | None:
+    todo = await db.get(Todo, data.id)
 
     if todo is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if todo.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
         todo.todo = data.todo
         await db.commit()
+        await db.refresh(todo)
         return todo

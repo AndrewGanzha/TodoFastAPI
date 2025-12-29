@@ -19,7 +19,7 @@ async def create_todo_endpoint(
 ) -> Todo:
     return await create_todo_service(data, db, current_user)
 
-@router.post("/update", response_model=TodoUpdate)
+@router.post("/update", response_model=TodoGet)
 async def update_todo(
     data: TodoUpdate,
     db: AsyncSession = Depends(db_helper.session_getter),
