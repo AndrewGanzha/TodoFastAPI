@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from core.models import Todo, User
-from core.schemas.todo import TodoCreate, TodoUpdate
+from core.schemas.todo import TodoCreate, TodoUpdate, TodoDelete
 
 
 async def create(data: TodoCreate, db: AsyncSession, current_user: User) -> Todo:
@@ -26,3 +26,16 @@ async def update(data: TodoUpdate, db: AsyncSession, current_user: User) -> Todo
         await db.commit()
         await db.refresh(todo)
         return todo
+
+async def delete(data: TodoDelete, db: AsyncSession, current_user: User) -> None:
+    todo = await db.get(Todo, data.id)
+
+    if todo is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if todo.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    else:
+        await db.delete(todo)
+        await db.commit()
+
+    return None
