@@ -1,3 +1,5 @@
+from typing import Awaitable, Callable
+
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +19,7 @@ def get_token_from_header(
         raise HTTPException(status_code=401, detail="Invalid auth scheme")
     return credentials.credentials
 
-def get_current_user(secret_key: str):
+def get_current_user(secret_key: str) -> Callable[..., Awaitable[User]]:
     async def _dep(
         db: AsyncSession = Depends(db_helper.session_getter),
         token: str = Depends(get_token_from_header),

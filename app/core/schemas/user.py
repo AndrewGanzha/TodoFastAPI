@@ -28,6 +28,8 @@ class UserOut(BaseModel):
     id: int
     email: EmailStr
 
+    model_config = {"from_attributes": True}
+
 class TokenOut(BaseModel):
     access_token: str
     refresh_token: str

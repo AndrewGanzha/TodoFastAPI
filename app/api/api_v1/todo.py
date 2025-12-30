@@ -19,7 +19,7 @@ async def create_todo_endpoint(
     data: TodoCreate,
     db: AsyncSession = Depends(db_helper.session_getter),
     current_user: User = Depends(get_current_user(settings.auth.access_secret_key)),
-) -> Todo:
+) -> TodoGet:
     return await create_todo_service(data, db, current_user)
 
 @router.post("/update", response_model=TodoGet)
@@ -27,7 +27,7 @@ async def update_todo_endpoint(
     data: TodoUpdate,
     db: AsyncSession = Depends(db_helper.session_getter),
     current_user: User = Depends(get_current_user(settings.auth.access_secret_key)),
-)-> Todo:
+) -> TodoGet:
     return await update_todo_service(data, db, current_user)
 
 @router.post("/delete", response_model=None)

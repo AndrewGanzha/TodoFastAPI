@@ -16,8 +16,7 @@ async def create(data: TodoCreate, db: AsyncSession, current_user: User) -> Todo
     await db.refresh(todo)
     return todo
 
-# TODO поправить типизацию
-async def update(data: TodoUpdate, db: AsyncSession, current_user: User) -> Todo | None:
+async def update(data: TodoUpdate, db: AsyncSession, current_user: User) -> Todo:
     todo = await db.get(Todo, data.id)
 
     if todo is None:

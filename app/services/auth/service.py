@@ -2,6 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
+from core.models import User
 from repository.users import (
     UserAlreadyExistsError,
     create_user,
@@ -12,7 +13,7 @@ from services.auth.jwt import create_access_token, create_refresh_token, decode_
 from services.auth.security import hash_password, verify_password
 
 
-async def register_user(db: AsyncSession, data: UserRegisterIn):
+async def register_user(db: AsyncSession, data: UserRegisterIn) -> User:
     existing = await get_user_by_email(db, data.email)
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
