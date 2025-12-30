@@ -11,7 +11,7 @@ from services.todo.todo import get_all_todos
 from services.todo.todo import create_todo as create_todo_service, delete_todo
 from services.todo.todo import update_todo as update_todo_service
 
-router = APIRouter()
+router = APIRouter(tags=["todo"])
 
 
 @router.post("/create", response_model=TodoGet)

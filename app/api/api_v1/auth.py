@@ -7,7 +7,7 @@ from core.config import settings
 from services.auth.deps import get_current_user
 from services.auth.service import login_user, refresh_access_token, register_user
 
-router = APIRouter()
+router = APIRouter(tags=["auth"])
 
 @router.post("/register", response_model=UserOut, status_code=201)
 async def register(
